@@ -1,7 +1,8 @@
 # PinjamKampus API
 
-- Nama dan NRP:
-- Persona:
+- Nama: Muhammad Alfaraldi Raihan 
+- NRP: 5053241043
+- Persona: D
 - Cara menjalankan: `go run .` lalu buka http://localhost:8080
 
 ## Fitur
