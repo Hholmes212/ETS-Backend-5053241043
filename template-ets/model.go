@@ -1,5 +1,7 @@
 package main
 
+const statusAktif = "aktif"
+
 type SumberDaya struct {
 	ID    int    `json:"id"`
 	Nama  string `json:"nama"`
@@ -32,4 +34,22 @@ type peminjamanInput struct {
 	SlotMulai    *int    `json:"slot_mulai"`
 	SlotSelesai  *int    `json:"slot_selesai"`
 	Jumlah       *int    `json:"jumlah"`
+}
+
+type paketItemInput struct {
+	SumberDayaID *int `json:"sumber_daya_id"`
+	Jumlah       *int `json:"jumlah"`
+}
+
+type paketInput struct {
+	Peminjam    *string          `json:"peminjam"`
+	Tanggal     *string          `json:"tanggal"`
+	SlotMulai   *int             `json:"slot_mulai"`
+	SlotSelesai *int             `json:"slot_selesai"`
+	Item        []paketItemInput `json:"item"`
+}
+
+type paketHasil struct {
+	PaketID    int          `json:"paket_id"`
+	Peminjaman []Peminjaman `json:"peminjaman"`
 }

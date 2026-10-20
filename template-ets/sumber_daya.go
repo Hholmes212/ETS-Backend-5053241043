@@ -13,11 +13,17 @@ func (s *Store) handleBuatSumberDaya(w http.ResponseWriter, r *http.Request) {
 		tulisError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	tulisJSON(w, http.StatusCreated, s.tambahSumberDaya(sd))
+	s.mu.Lock()
+	baru := s.tambahSumberDaya(sd)
+	s.mu.Unlock()
+	tulisJSON(w, http.StatusCreated, baru)
 }
 
 func (s *Store) handleDaftarSumberDaya(w http.ResponseWriter, r *http.Request) {
-	tulisJSON(w, http.StatusOK, s.sumberDaya)
+	s.mu.Lock()
+	daftar := append([]SumberDaya{}, s.sumberDaya...)
+	s.mu.Unlock()
+	tulisJSON(w, http.StatusOK, daftar)
 }
 
 func (s *Store) handleDetailSumberDaya(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +32,9 @@ func (s *Store) handleDetailSumberDaya(w http.ResponseWriter, r *http.Request) {
 		tulisError(w, http.StatusBadRequest, "id harus berupa angka")
 		return
 	}
+	s.mu.Lock()
 	sd, ada := s.cariSumberDaya(id)
+	s.mu.Unlock()
 	if !ada {
 		tulisError(w, http.StatusNotFound, "sumber daya tidak ditemukan")
 		return

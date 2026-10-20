@@ -1,18 +1,23 @@
 package main
 
+import "sync"
+
 type Store struct {
-	sumberDaya []SumberDaya
-	peminjaman []Peminjaman
-	nextSDID   int
-	nextPemID  int
+	mu          sync.Mutex
+	sumberDaya  []SumberDaya
+	peminjaman  []Peminjaman
+	nextSDID    int
+	nextPemID   int
+	nextPaketID int
 }
 
 func NewStore() *Store {
 	return &Store{
-		sumberDaya: []SumberDaya{},
-		peminjaman: []Peminjaman{},
-		nextSDID:   1,
-		nextPemID:  1,
+		sumberDaya:  []SumberDaya{},
+		peminjaman:  []Peminjaman{},
+		nextSDID:    1,
+		nextPemID:   1,
+		nextPaketID: 1,
 	}
 }
 
@@ -40,12 +45,19 @@ func (s *Store) tambahPeminjaman(p Peminjaman) Peminjaman {
 }
 
 func (s *Store) cariPeminjaman(id int) (Peminjaman, bool) {
-	for _, p := range s.peminjaman {
-		if p.ID == id {
-			return p, true
-		}
+	if i := s.indeksPeminjaman(id); i >= 0 {
+		return s.peminjaman[i], true
 	}
 	return Peminjaman{}, false
+}
+
+func (s *Store) indeksPeminjaman(id int) int {
+	for i, p := range s.peminjaman {
+		if p.ID == id {
+			return i
+		}
+	}
+	return -1
 }
 
 func (s *Store) filterPeminjaman(sdID *int, tanggal, status string) []Peminjaman {
@@ -63,4 +75,27 @@ func (s *Store) filterPeminjaman(sdID *int, tanggal, status string) []Peminjaman
 		hasil = append(hasil, p)
 	}
 	return hasil
+}
+
+func (s *Store) adaBentrok(p Peminjaman, abaikanID int) bool {
+	sd, ada := s.cariSumberDaya(p.SumberDayaID)
+	if !ada {
+		return false
+	}
+	var terpakai [9]int // indeks 1..8
+	for _, q := range s.peminjaman {
+		if q.ID == abaikanID || q.Status != statusAktif ||
+			q.SumberDayaID != p.SumberDayaID || q.Tanggal != p.Tanggal {
+			continue
+		}
+		for slot := q.SlotMulai; slot <= q.SlotSelesai; slot++ {
+			terpakai[slot] += q.Jumlah
+		}
+	}
+	for slot := p.SlotMulai; slot <= p.SlotSelesai; slot++ {
+		if terpakai[slot]+p.Jumlah > sd.Stok {
+			return true
+		}
+	}
+	return false
 }

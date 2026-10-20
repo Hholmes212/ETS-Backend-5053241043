@@ -4,12 +4,12 @@ Catat setiap penggunaan AI yang menghasilkan kode. Jika tidak memakai AI sama se
 
 Log yang jujur tidak mengurangi nilai, sebanyak apa pun AI dipakai. Yang mengurangi nilai adalah log yang tidak sesuai dengan kode, atau isi log yang tidak bisa dijelaskan.
 
-## (Nama fitur atau fungsi, misalnya: Deteksi bentrok slot, B5)
-- Prompt: Minta dilengkapi bagian (validasi, bentrok, ubah/hapus, mutex) dan fitur peminjaman paket 
-- Dipakai: memeriksa validasi, bentrok, PUT/DELETE, paket, dan permintaan bersamaan.
-- Diubah: (apa yang kamu ubah atau perbaiki dari hasil AI, dan kenapa)
+## B1-B3: sumber daya dan peminjaman dasar
+- Prompt: Minta bantuan menjalankan project (error `go run` dan `go mod`) dan membuat daftar request Postman untuk menguji endpoint B1-B3.
+- Dipakai: Daftar request Postman untuk menguji POST/GET sumber daya, POST peminjaman, serta GET daftar, filter, dan detail peminjaman. Kode B1-B3 (`sumber_daya.go`, `peminjaman.go`, `store.go`, `validasi.go`) saya tulis sendiri.
+- Diubah: Tidak ada yang diubah dari hasil AI, karena AI tidak menghasilkan kode untuk bagian ini.
 
-## (Entri berikutnya)
-- Prompt:
-- Dipakai:
-- Diubah:
+## B4-B5: validasi dan deteksi bentrok
+- Prompt: Minta dilengkapi validasi error JSON dan deteksi bentrok slot berdasarkan stok.
+- Dipakai: `adaBentrok()` di `store.go`, pemanggilannya di `handleBuatPeminjaman` (`peminjaman.go`), dan route `"/"` untuk 404 JSON di `main.go`.
+- Diubah: Hasil AI dipecah menjadi versi bertahap sampai B5 supaya sesuai progres saya. Fungsi `adaBentrok` menghitung pemakaian unit per slot, bukan hanya ada atau tidaknya peminjaman lain.

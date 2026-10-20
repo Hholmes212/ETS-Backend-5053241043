@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-// NewHandler membuat penyimpanan baru yang kosong dan memasang semua route.
 func NewHandler() http.Handler {
 	s := NewStore()
 	mux := http.NewServeMux()
@@ -19,6 +18,19 @@ func NewHandler() http.Handler {
 	mux.HandleFunc("POST /peminjaman", s.handleBuatPeminjaman)
 	mux.HandleFunc("GET /peminjaman", s.handleDaftarPeminjaman)
 	mux.HandleFunc("GET /peminjaman/{id}", s.handleDetailPeminjaman)
+
+	// B6: ubah dan hapus
+	mux.HandleFunc("PUT /peminjaman/{id}", s.handleUbahPeminjaman)
+	mux.HandleFunc("DELETE /peminjaman/{id}", s.handleHapusPeminjaman)
+
+	// Persona D: paket peminjaman
+	mux.HandleFunc("POST /paket-peminjaman", s.handleBuatPaket)
+	mux.HandleFunc("DELETE /paket-peminjaman/{id}", s.handleHapusPaket)
+
+	// B4: route yang tidak dikenal tetap dijawab JSON, bukan teks biasa
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		tulisError(w, http.StatusNotFound, "endpoint tidak ditemukan")
+	})
 
 	return mux
 }
